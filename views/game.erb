@@ -9,9 +9,18 @@
   <% end %>
 </ul>
 
+<p>
+  <%= session[:player_name] %> has <%= calculate_total(session[:player_hand]) %>
+  What would you like to do?
+</p>
+
 <p>Dealer's Hand:</p>
 <ul>
   <% session[:dealer_hand].each do |card| %>
     <li><%= card.to_s %></li>
   <% end %>
 </ul>
+
+<p>
+  Dealer has <%= calculate_total(session[:dealer_hand]) %>
+</p>
