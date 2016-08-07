@@ -23,6 +23,25 @@ helpers do
     end
     hand_total
   end
+
+  def card_image(card)
+    suit = case card[0]
+      when 'Heart' then 'hearts'
+      when 'Diamond' then 'diamonds'
+      when 'Club' then 'clubs'
+      when 'Spade' then 'spades'
+    end
+    value = card[1]
+    if ['J', 'Q', 'K', 'A'].include?(value)
+      value = case card[1]
+        when 'J' then 'jack'
+        when 'Q' then 'queen'
+        when 'K' then 'king'
+        when 'A' then 'ace'
+      end
+    end
+    "<img src='/images/cards/#{suit}_#{value}.jpg' class='card_image'>"
+  end
 end
 
 before do
@@ -33,11 +52,19 @@ get '/' do
   if session[:player_name]
     redirect '/game'
   else
-    erb :new_player
+    redirect '/new_player'
   end
 end
 
+get '/new_player' do
+  erb :new_player
+end
+
 post '/new_player' do
+  if params[:player_name].empty?
+    @error = "Player name is required."
+    halt erb(:new_player)
+  end
   session[:player_name] = params[:player_name]
   redirect '/game'
 end
@@ -60,15 +87,19 @@ end
 
 post '/game/player/hit' do
   session[:player_hand] << session[:deck].pop
-  if calculate_total(session[:player_hand]) > 21
-    @error = "Sorry, you've busted."
+  player_total = calculate_total(session[:player_hand])
+  if player_total == 21
+    @success = "Blackjack!!! Congratulations #{session[:player_name]}!"
+    @show_hit_or_stay_buttons = false
+  elsif player_total > 21
+    @error = "Sorry #{session[:player_name]}, you've busted."
     @show_hit_or_stay_buttons = false
   end
   erb :game
 end
 
 post '/game/player/stay' do
-  @success = "You have chosen to stay"
+  @success = "#{session[:player_name]} has chosen to stay"
   @show_hit_or_stay_buttons = false
   erb :game
 end
