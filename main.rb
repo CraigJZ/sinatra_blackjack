@@ -101,6 +101,44 @@ end
 post '/game/player/stay' do
   @success = "#{session[:player_name]} has chosen to stay"
   @show_hit_or_stay_buttons = false
+  redirect '/game/dealer'
+end
+
+get '/game/dealer' do
+  @show_hit_or_stay_buttons = false
+
+  dealer_total = calculate_total(session[:dealer_hand])
+
+  if dealer_total == 21
+    @error = "Blackjack! Dealer wins! Sorry #{session[:player_name]}."
+  elsif dealer_total > 21
+    @succcess = "Dealer busted! #{session[:player_name]} wins!"
+  elsif dealer_total >= 17
+    redirect '/game/compare_hands'
+  else
+    @show_dealer_hit_button = true
+  end
+  erb :game
+end
+
+post '/game/dealer/hit' do
+  session[:dealer_hand] << session[:deck].pop
+  redirect '/game/dealer'
+end
+
+get '/game/compare_hands' do
+  @show_hit_or_stay_buttons = false
+
+  dealer_total = calculate_total(session[:dealer_hand])
+  player_total = calculate_total(session[:player_hand])
+
+  if player_total > dealer_total
+    @success = "Congratulations #{session[:player_name]}! You win."
+  elsif dealer_total > player_total
+    @error = "Dealer wins! Sorry #{session[:player_name]}."
+  else
+    @success = "It's a tie"
+  end
   erb :game
 end
 

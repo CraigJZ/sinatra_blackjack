@@ -7,10 +7,13 @@
   <% session[:dealer_hand].each do |card| %>
     <%= card_image(card) %>
   <% end %>
+  <% if @show_dealer_hit_button %>
+    <h5>Dealer has <%= calculate_total(session[:dealer_hand])%> and will hit.</h5>
+    <form action='/game/dealer/hit' method='post'>
+      <input type='submit' class='btn btn-primary' value='Click to see dealer card &rarr;'>
+    </form>
+  <% end %>
 </div>
-<p>
-  Dealer has <%= calculate_total(session[:dealer_hand]) %>
-</p>
 
 <div class='well'>
   <h4>Player's Hand:</h4>
