@@ -118,13 +118,12 @@ post '/game/player/hit' do
   if player_total == BLACKJACK
     winner!("#{session[:player_name]} hit blackjack.")
   elsif player_total > BLACKJACK
-    loser!("It looks like #{session[:player_name]} busted at #{player_total}.")
+    loser!("#{session[:player_name]} busted at #{player_total}.")
   end
   erb :game
 end
 
 post '/game/player/stay' do
-  @success = "#{session[:player_name]} has chosen to stay"
   @show_hit_or_stay_buttons = false
   redirect '/game/dealer'
 end
